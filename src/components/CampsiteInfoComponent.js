@@ -14,11 +14,11 @@ class CommentForm extends Component {
         super(props);
         this.state = {
             isModalOpen: false,
-            rating: '',
-            yourName: '',
-            comment: '',
+            rating:'',
+            author:'',
+            comments:'',
             touched: {
-                yourName: false
+                author: false
             }
         };
         this.toggleModal = this.toggleModal.bind(this);
@@ -32,7 +32,8 @@ class CommentForm extends Component {
     }
 
     handleSubmit(values) {
-        console.log("Current state is: " + JSON.stringify(values));
+        this.toggleModal();
+        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.comments);
         alert("Current state is: " + JSON.stringify(values));
     }
 
@@ -64,7 +65,7 @@ class CommentForm extends Component {
                             <Row className="form-group">
                                 <Label htmlFor="yourName" md={8}>Your Name</Label>
                                 <Col md={12}>
-                                    <Control.text model=".yourName" id="yourName" name="yourName"
+                                    <Control.text model=".author" id="yourName" name="yourName"
                                         placeholder="Your Name"
                                         className="form-control"
                                         validators={{
@@ -90,12 +91,11 @@ class CommentForm extends Component {
                             <Row className="form-group">
                                 <Label htmlFor="comment" md={8}>Comment</Label>
                                 <Col md={12}>
-                                    <Control.textarea rows="6" model=".comment" id="comment" name="comment"
+                                    <Control.textarea rows="6" model=".comments" id="comment" name="comment"
                                         className="form-control" />
                                 </Col>
                             </Row>
                             <Button type="submit" color="primary"> Submit  </Button>
-
                         </LocalForm>
                     </ModalBody>
                 </Modal>
@@ -120,7 +120,7 @@ function RenderCampsite({ campsite }) {
 }
 
 // Function to render Comments
-function RenderComments({ comments }) {
+function RenderComments({comments, addComment, campsiteId}) {
     if (comments) {
         return (
             <div className="col-md-5 m-1">
@@ -131,7 +131,7 @@ function RenderComments({ comments }) {
                         <br /><br />
                     </div>)
                 }
-                <CommentForm />
+                <CommentForm campsiteId={campsiteId} addComment={addComment} />
             </div>
         );
 
@@ -160,7 +160,11 @@ function CampsiteInfo(props) {
                 </div>
                 <div className="row">
                     <RenderCampsite campsite={props.campsite} />
-                    <RenderComments comments={props.comments} />
+                    <RenderComments
+                        comments={props.comments}
+                        addComment={props.addComment}
+                        campsiteId={props.campsite.id}
+                    />
                 </div>
             </div>
         );
