@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Label, Col, Row } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, Form, Errors, actions } from 'react-redux-form';
+import { baseUrl } from '../shared/baseUrl';
 import { Target } from 'react-popper';
 
 const required = val => val && val.length;
@@ -21,7 +22,7 @@ class Contact extends Component {
             email: '',
             agree: false,
             contactType: 'By Phone',
-            feedback: '',
+            message: '',
             touched: {
                 firstName: false,
                 lastName: false,
@@ -35,9 +36,10 @@ class Contact extends Component {
 
 
     handleSubmit(values) {
-        console.log("Current state is: " + JSON.stringify(values));
-        alert("Current state is: " + JSON.stringify(values));
-        this.props.resetFeedbackForm();
+        //console.log("Current state is: " + JSON.stringify(values));
+        //alert("Current state is: " + JSON.stringify(values));
+        this.props.postFeedback(values.firstName,values.lastName, values.email, values.agree, values.contactType, values.phoneNum,values.message);
+       this.props.resetFeedbackForm();
     }
 
     render() {
@@ -204,9 +206,9 @@ class Contact extends Component {
                                 </Col>
                             </Row>
                             <Row className="form-group">
-                                <Label htmlFor="feedback" md={2}>Your Feedback</Label>
+                                <Label htmlFor="message" md={2}>Your Feedback</Label>
                                 <Col md={10}>
-                                    <Control.textarea model=".feedback" id="feedback" name="feedback"
+                                    <Control.textarea model=".message" id="message" name="message"
                                         rows="12"
                                         className="form-control"
                                     />

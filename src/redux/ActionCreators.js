@@ -1,7 +1,7 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
 
-//redux Thunk Syntax with two arrows
+//redux Thunk Syntax with two arrows // Campsites
 export const fetchCampsites = () => dispatch => {
     dispatch(campsitesLoading());
 
@@ -39,6 +39,8 @@ export const addCampsites = campsites =>({
     type: ActionTypes.ADD_CAMPSITES,
     payload: campsites
 });
+
+// Comments
 
 export const fetchComments = () => dispatch => {    
     return fetch(baseUrl + 'comments')
@@ -111,6 +113,7 @@ export const postComment = (campsiteId, rating, author, text) => dispatch => {
         });
 };
 
+// Promotions
 
 export const fetchPromotions = () => (dispatch) => {
     
@@ -149,3 +152,82 @@ export const addPromotions = promotions => ({
     type: ActionTypes.ADD_PROMOTIONS,
     payload: promotions
 });
+
+// Partners
+
+
+export const fetchPartners = () => (dispatch) => {
+    
+    dispatch(partnersLoading());
+
+    return fetch(baseUrl + 'partners')
+        .then(response => {
+                if (response.ok) {
+                    return response;
+                } else {
+                    const error = new Error(`Error ${response.status}: ${response.statusText}`);
+                    error.response = response;
+                    throw error;
+                }
+            },
+            error => {
+                const errMess = new Error(error.message);
+                throw errMess;
+            }
+        )
+        .then(response => response.json())
+        .then(partners => dispatch(addPartners(partners)))
+        .catch(error => dispatch(promotionsFailed(error.message)));
+};
+
+export const partnersLoading = () => ({
+    type: ActionTypes.PARTNERS_LOADING
+});
+
+export const partnerFailed = errMess => ({
+    type: ActionTypes.PARTNERS_FAILED,
+    payload: errMess
+});
+
+export const addPartners = partners => ({
+    type: ActionTypes.ADD_PARTNERS,
+    payload: partners
+});
+
+//Postfeedback
+
+export const postFeedback= (firstName, lastName, email, agree,contactType, phoneNum, message) => dispatch => {
+    const feedback = {
+       firstName: firstName,
+      lastName: lastName,
+      email: email,
+      agree: agree,
+      contactType: contactType,
+      phoneNum: phoneNum,
+      message: message
+  };
+  
+  return fetch(baseUrl + 'feedback',{
+      method: "POST",
+      body: JSON.stringify(feedback),
+      headers: {
+          "Content-Type": "application/json"
+      }
+  })
+  .then(response => {
+      if (response.ok) {
+          alert("Thankyou for the FeedBack...." + JSON.stringify(feedback));
+          return response;
+      } else {
+          const error = new Error(`Error ${response.status}: ${response.statusText}`);
+          error.response = response;
+          throw error;
+      }
+  },
+  error => { throw error; }
+  )
+        .catch(error => {
+          console.log('Feedback', error.message);
+          alert('Your feedback could not be posted\nError: ' + error.message);
+      });
+};

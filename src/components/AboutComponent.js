@@ -1,12 +1,16 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
+import { Loading } from './LoadingComponent';
 import { Link } from 'react-router-dom';
+import { baseUrl } from '../shared/baseUrl';
+import { Fade, Stagger } from 'react-animation-components';
+
 
 function RenderPartner({ partner }) {
     if (partner) {
         return (
             <React.Fragment>
-                <Media object src={partner.image} alt={partner.name} style={{ width: 150 }} />
+                <Media object src={baseUrl + partner.image} alt={partner.name} style={{ width: 150 }} />
                 <Media body className="ml-5 mb-4">
                     <Media heading>{partner.name}</Media>
                     {partner.description}
@@ -17,16 +21,47 @@ function RenderPartner({ partner }) {
     return <div />
 }
 
+function PartnerList(props) {
+    if (props.partners.isLoading) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <Loading />
+                </div>
+            </div>
+        );
+    }
+    if (props.partners.errMess) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <div className="col">
+                        <h4>{props.partner.errMess}</h4>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    return (
+        <div className="col mt-4">
+            <Stagger in>
+                {props.partners.partners.map(partner => {
+                    return (
+                        <Fade in key={partner.id}>
+                            <Media tag="li">
+                                {RenderPartner({ partner })}
+                            </Media>
+                        </Fade>
+                    );
+                })}
+            </Stagger>
+        </div>
+    )
+}
 
 
 function About(props) {
-    const aboutus = props.partners.map(partner => {
-        return (
-            <Media tag="li" key={partner.id} >
-                <RenderPartner partner={partner} />
-            </Media>
-        );
-    });
+
     return (
         <div className="container">
             <div className="row">
@@ -78,12 +113,13 @@ function About(props) {
             <div className="row row-content">
                 <div className="col-12">
                     <h3>Community Partners</h3>
+                    <div className="col mt-4">
+                        <Media list>
+                            <PartnerList partners={props.partners} />
+                        </Media>
+                    </div>
                 </div>
-                <div className="col mt-4">
-                    <Media list>
-                        {aboutus}
-                    </Media>
-                </div>
+
             </div>
         </div>
     );
